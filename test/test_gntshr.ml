@@ -13,7 +13,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 let (|>) a b = b a
-
+open OUnit
 open Gnt
 
 let main shr_h dev_h =
@@ -58,17 +58,25 @@ let main shr_h dev_h =
   Gnttab.unmap_exn dev_h local_mapping;
   Gntshr.munmap_exn shr_h share
 
-let just_grant_and_ungrant shr_h n =
-  let share = Gntshr.share_pages_exn shr_h 0 n true in
-  Gntshr.munmap_exn shr_h share
-
-let _ =
+let leak_free n () =
   let shr_h = Gntshr.interface_open () in
   let dev_h = Gnttab.interface_open () in
   for i = 0 to 10000 do
-    Printf.printf "%d " i;
-    just_grant_and_ungrant shr_h 2
+    let share = Gntshr.share_pages_exn shr_h 0 n true in
+    Gntshr.munmap_exn shr_h share
   done;
-  Printf.printf "\n%!";
   Gntshr.interface_close shr_h;
   Gnttab.interface_close dev_h
+
+let _ =
+  let verbose = ref false in
+  Arg.parse [
+    "-verbose", Arg.Unit (fun _ -> verbose := true), "Run in verbose mode";
+  ] (fun x -> Printf.fprintf stderr "Ignoring argument: %s" x)
+    "Test gntshr/gnttab code";
+
+  let suite = "gnt" >::: [
+    "leak_free 1 page" >:: leak_free 1;
+    "leak_free 2 pages" >:: leak_free 2;
+  ] in
+  run_test_tt ~verbose:!verbose suite

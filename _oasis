@@ -40,7 +40,7 @@ Executable test_gntshr
   Install:            false
   ByteOpt:            -bin-annot
   NativeOpt:          -bin-annot
-  BuildDepends:       xen-gnt, xen-gnt.unix, cstruct
+  BuildDepends:       xen-gnt, xen-gnt.unix, cstruct, oUnit
 
 Executable linking
   Build$:             flag(tests)&&flag(xenctrl)
