@@ -16,6 +16,16 @@ let (|>) a b = b a
 open OUnit
 open Gnt
 
+let get_my_domid () =
+  let module Xs = Xs_client_lwt.Client(Xs_transport_lwt_unix_client) in
+  let open Lwt in
+  Lwt_main.run (
+    Xs.make ()
+    >>= fun c ->
+    Xs.(immediate c (fun h -> read h "domid")) >>= fun server_domid ->
+    return (int_of_string server_domid)
+  )
+
 let main shr_h dev_h =
   let share = Gntshr.share_pages_exn shr_h 0 1 true in
   let io_page_shr_side = Gntshr.(share.mapping) |> Cstruct.of_bigarray in
