@@ -83,6 +83,21 @@ let leak_free n () =
   Gntshr.interface_close shr_h;
   Gnttab.interface_close dev_h
 
+let check_multiple_maps () =
+  let domid = get_my_domid () in
+  let shr_h = Gntshr.interface_open () in
+  let dev_h = Gnttab.interface_open () in
+  let share = Gntshr.share_pages_exn shr_h domid 1 true in
+  let share' = Gntshr.share_pages_exn shr_h domid 1 true in
+  let mapping = Gnttab.map_exn dev_h Gnttab.({domid; ref=List.hd Gntshr.(share.refs)}) true in
+  let mapping' = Gnttab.map_exn dev_h Gnttab.({domid; ref=List.hd Gntshr.(share'.refs)}) true in
+  Gnttab.unmap_exn dev_h mapping';
+  Gnttab.unmap_exn dev_h mapping;
+  Gntshr.munmap_exn shr_h share';
+  Gntshr.munmap_exn shr_h share;
+  Gntshr.interface_close shr_h;
+  Gnttab.interface_close dev_h
+
 let _ =
   let verbose = ref false in
   Arg.parse [
@@ -94,5 +109,6 @@ let _ =
     "leak_free 1 page" >:: leak_free 1;
     "leak_free 2 pages" >:: leak_free 2;
     "check_read_write" >:: check_read_write;
+    "check_multiple_maps" >:: check_multiple_maps;
   ] in
   run_test_tt ~verbose:!verbose suite
