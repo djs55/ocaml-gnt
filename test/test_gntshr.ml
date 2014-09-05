@@ -26,12 +26,15 @@ let get_my_domid () =
     return (int_of_string server_domid)
   )
 
-let main shr_h dev_h =
-  let share = Gntshr.share_pages_exn shr_h 0 1 true in
+let check_read_write () =
+  let shr_h = Gntshr.interface_open () in
+  let dev_h = Gnttab.interface_open () in
+  let domid = get_my_domid () in
+  let share = Gntshr.share_pages_exn shr_h domid 1 true in
   let io_page_shr_side = Gntshr.(share.mapping) |> Cstruct.of_bigarray in
   List.iter (fun r -> Printf.printf "Shared a page with gntref = %d\n%!" r) Gntshr.(share.refs);
   Printf.printf "Shared page(s) OK. Now trying to map.\n%!";
-  let local_mapping = Gnttab.map_exn dev_h Gnttab.({domid=0; ref=List.hd Gntshr.(share.refs)}) true in
+  let local_mapping = Gnttab.map_exn dev_h Gnttab.({domid; ref=List.hd Gntshr.(share.refs)}) true in
   let io_page_map_side = Gnttab.Local_mapping.(to_buf local_mapping) |> Cstruct.of_bigarray in
   Printf.printf "Mapping OK. Now writing randow stuff in one side and check we have the same thing on the other side.\n%!";
   let random_string = String.create 4096 in
@@ -48,10 +51,10 @@ let main shr_h dev_h =
   Gnttab.unmap_exn dev_h local_mapping;
   Gntshr.munmap_exn shr_h share;
   Printf.printf "Now trying to share and map 10 pages as a vector.\n%!";
-  let share = Gntshr.share_pages_exn shr_h 0 10 true in
+  let share = Gntshr.share_pages_exn shr_h domid 10 true in
   let io_page_shr_side = Gntshr.(share.mapping) |> Cstruct.of_bigarray in
   let refs = Gntshr.(share.refs) in
-  let grants = List.map (fun ref -> Gnttab.({domid=0; ref})) refs in
+  let grants = List.map (fun ref -> Gnttab.({domid; ref})) refs in
   let local_mapping = Gnttab.mapv_exn dev_h grants true in
   let io_page_map_side = Gnttab.Local_mapping.(to_buf local_mapping) |> Cstruct.of_bigarray in
   let random_string = String.create (4096*10) in
@@ -66,7 +69,9 @@ let main shr_h dev_h =
   Printf.printf "I read the same as well from the map side...\n%!";
   Printf.printf "Success! Now unmapping and unsharing everything!\n%!";
   Gnttab.unmap_exn dev_h local_mapping;
-  Gntshr.munmap_exn shr_h share
+  Gntshr.munmap_exn shr_h share;
+  Gntshr.interface_close shr_h;
+  Gnttab.interface_close dev_h
 
 let leak_free n () =
   let shr_h = Gntshr.interface_open () in
@@ -88,5 +93,6 @@ let _ =
   let suite = "gnt" >::: [
     "leak_free 1 page" >:: leak_free 1;
     "leak_free 2 pages" >:: leak_free 2;
+    "check_read_write" >:: check_read_write;
   ] in
   run_test_tt ~verbose:!verbose suite
