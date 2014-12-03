@@ -29,7 +29,7 @@
 
 (** {2 Common interface} *)
 
-type gntref = int
+type gntref = int with sexp
 (** Type of a grant table index, called a grant reference in
     Xen's terminology. *)
 
@@ -52,7 +52,7 @@ module Gnttab : sig
     (** foreign domain who is exporting memory *)
     ref: gntref;
     (** id which identifies the specific export in the foreign domain *)
-  }
+  } with sexp
   (** A foreign domain must explicitly "grant" us memory and send us the
       "reference". The pair of (foreign domain id, reference) uniquely
       identifies the block of memory. This pair ("grant") is transmitted
@@ -60,7 +60,7 @@ module Gnttab : sig
       via a shared memory ring structure. *)
 
   module Local_mapping : sig
-    type t
+    type t with sexp_of
     (** Abstract type representing a locally-mapped shared memory page *)
 
     val to_buf: t -> Io_page.t
@@ -119,7 +119,7 @@ module Gntshr : sig
     (** List of grant references which have been shared with a foreign domain. *)
     mapping: Io_page.t;
     (** Mapping of the shared memory. *)
-  }
+  } with sexp_of
   (** When sharing a number of pages with another domain, we receive back both the
       list of grant references shared and actually mapped page(s). The foreign
       domain can map the same shared memory, after being notified (e.g. via xenstore)

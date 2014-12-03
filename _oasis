@@ -12,13 +12,22 @@ Flag xenctrl
   Default:            false
 
 Library xen_gnt
+  Pack:               true
   CompiledObject:     best
   Path:               lib
   Findlibname:        xen-gnt
-  Modules:            Gnt
+  Modules:            S, Gnt
   ByteOpt:            -bin-annot
   NativeOpt:          -bin-annot
-  BuildDepends:       unix, bigarray, io-page, lwt
+  BuildDepends:       unix, bigarray, io-page, lwt, sexplib.syntax
+
+Library xen_gnt_xen
+  CompiledObject:     best
+  Path:               xen
+  Findlibparent:      xen_gnt
+  Findlibname:        xen
+  Modules:            Xen_gnt # stubs currently in mirage-platform
+  BuildDepends:       lwt, bigarray, io-page, lwt.syntax, sexplib.syntax
 
 Library xen_gnt_unix
   Build$:             flag(xenctrl)

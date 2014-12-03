@@ -14,16 +14,20 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
-
+open Sexplib.Std
 open Lwt
 
-type gntref = int
-type domid = int
+type gntref = int with sexp
+type domid = int with sexp
+
+type page = Io_page.t
+let sexp_of_page _ = Sexplib.Sexp.Atom "<buffer>"
 
 let console = 0 (* public/grant_table.h:GNTTAB_RESERVED_CONSOLE *)
 let xenstore = 1 (* public/grant_table.h:GNTTAB_RESERVED_XENSTORE *)
 
 type grant_handle (* handle to a mapped grant *)
+let sexp_of_grant_handle _ = Sexplib.Sexp.Atom "<grant handle>"
 
 module Gnttab = struct
   type interface
@@ -45,13 +49,13 @@ module Gnttab = struct
   type grant = {
     domid: domid;
     ref: gntref;
-  }
+  } with sexp
 
   module Local_mapping = struct
     type t = {
       hs : grant_handle list;
-      pages: Io_page.t;
-    }
+      pages: page;
+    } with sexp_of
 
     let make hs pages = { hs; pages }
 
@@ -153,8 +157,8 @@ module Gntshr = struct
 
   type share = {
     refs: gntref list;
-    mapping: Io_page.t;
-  }
+    mapping: page;
+  } with sexp_of
 
   exception Interface_unavailable
 
