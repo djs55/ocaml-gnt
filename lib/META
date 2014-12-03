@@ -1,44 +1,55 @@
 # OASIS_START
-# DO NOT EDIT (digest: b41f20c7c996e9e6dfee9d0caaa12929)
+# DO NOT EDIT (digest: e72f72c62b132e2248b0c8bdd6e23855)
 version = "2.0.0"
 description = "Xen grant table bindings"
 requires = "unix bigarray io-page lwt sexplib.syntax"
-archive(byte) = "xen_gnt.cma"
-archive(byte, plugin) = "xen_gnt.cma"
-archive(native) = "xen_gnt.cmxa"
-archive(native, plugin) = "xen_gnt.cmxs"
-exists_if = "xen_gnt.cma"
+archive(byte) = "memory.cma"
+archive(byte, plugin) = "memory.cma"
+archive(native) = "memory.cmxa"
+archive(native, plugin) = "memory.cmxs"
+exists_if = "memory.cma"
 package "xenctrl" (
  version = "2.0.0"
  description = "Xen grant table bindings"
  requires = "unix lwt lwt.unix bigarray io-page.unix sexplib.syntax"
- archive(byte) = "xen_gnt_xenctrl.cma"
- archive(byte, plugin) = "xen_gnt_xenctrl.cma"
- archive(native) = "xen_gnt_xenctrl.cmxa"
- archive(native, plugin) = "xen_gnt_xenctrl.cmxs"
- exists_if = "xen_gnt_xenctrl.cma"
+ archive(byte) = "memory_xenctrl.cma"
+ archive(byte, plugin) = "memory_xenctrl.cma"
+ archive(native) = "memory_xenctrl.cmxa"
+ archive(native, plugin) = "memory_xenctrl.cmxs"
+ exists_if = "memory_xenctrl.cma"
 )
 
 package "xen" (
  version = "2.0.0"
  description = "Xen grant table bindings"
  requires = "lwt bigarray io-page lwt.syntax sexplib.syntax"
- archive(byte) = "xen_gnt_xen.cma"
- archive(byte, plugin) = "xen_gnt_xen.cma"
- archive(native) = "xen_gnt_xen.cmxa"
- archive(native, plugin) = "xen_gnt_xen.cmxs"
- exists_if = "xen_gnt_xen.cma"
+ archive(byte) = "memory_xen.cma"
+ archive(byte, plugin) = "memory_xen.cma"
+ archive(native) = "memory_xen.cmxa"
+ archive(native, plugin) = "memory_xen.cmxs"
+ exists_if = "memory_xen.cma"
 )
 
 package "unix" (
  version = "2.0.0"
  description = "Xen grant table bindings"
  requires = "lwt lwt.unix io-page io-page.unix lwt.syntax sexplib.syntax"
- archive(byte) = "xen_gnt_unix.cma"
- archive(byte, plugin) = "xen_gnt_unix.cma"
- archive(native) = "xen_gnt_unix.cmxa"
- archive(native, plugin) = "xen_gnt_unix.cmxs"
- exists_if = "xen_gnt_unix.cma"
+ archive(byte) = "memory_unix.cma"
+ archive(byte, plugin) = "memory_unix.cma"
+ archive(native) = "memory_unix.cmxa"
+ archive(native, plugin) = "memory_unix.cmxs"
+ exists_if = "memory_unix.cma"
+)
+
+package "inheap" (
+ version = "2.0.0"
+ description = "Xen grant table bindings"
+ requires = "xen-gnt lwt"
+ archive(byte) = "memory_inheap.cma"
+ archive(byte, plugin) = "memory_inheap.cma"
+ archive(native) = "memory_inheap.cmxa"
+ archive(native, plugin) = "memory_inheap.cmxs"
+ exists_if = "memory_inheap.cma"
 )
 # OASIS_STOP
 
