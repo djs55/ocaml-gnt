@@ -15,7 +15,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
-open Gnt
+open Memory
 
 include S.MEMORY
   with type 'a io = 'a Lwt.t

@@ -11,7 +11,7 @@ Flag xenctrl
   Description:        build Unix userspace bindings
   Default:            false
 
-Library xen_gnt
+Library memory
   Pack:               true
   CompiledObject:     best
   Path:               lib
@@ -21,27 +21,27 @@ Library xen_gnt
   NativeOpt:          -bin-annot
   BuildDepends:       unix, bigarray, io-page, lwt, sexplib.syntax
 
-Library xen_gnt_xen
+Library memory_xen
   CompiledObject:     best
   Path:               xen
-  Findlibparent:      xen_gnt
+  Findlibparent:      memory
   Findlibname:        xen
   Modules:            Xen_memory # stubs currently in mirage-platform
   BuildDepends:       lwt, bigarray, io-page, lwt.syntax, sexplib.syntax
 
-Library xen_gnt_unix
+Library memory_unix
   CompiledObject:     best
   Path:               unix
-  Findlibparent:      xen_gnt
+  Findlibparent:      memory
   Findlibname:        unix
   Modules:            Unix_memory
   BuildDepends:       lwt, lwt.unix, io-page, io-page.unix, lwt.syntax, sexplib.syntax
 
-Library xen_gnt_xenctrl
+Library memory_xenctrl
   Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               xenctrl
-  Findlibparent:      xen_gnt
+  Findlibparent:      memory
   Findlibname:        xenctrl
   Modules:            Xenctrl_memory
   CSources:           gntshr_stubs.c, gnttab_stubs.c
