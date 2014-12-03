@@ -1,10 +1,12 @@
 [![Build stats](https://travis-ci.org/mirage/ocaml-gnt.png?branch=master)](https://travis-ci.org/mirage/ocaml-gnt)
 
-Xen grant table bindings for OCaml.
-===================================
+Xen-style memory sharing implementations
+========================================
 
-These are used to create Xen device driver "backends" (servers)
-and "frontends" (clients).
+This package builds the following subpackages:
 
-This library can be used in both kernelspace (via Mirage) or in userspace
-(on Linux). To see a concrete example, have a look at [mirage/ocaml-vchan]
+xen-gnt.unix: implements memory sharing under Unix with mmap(2)
+xen-gnt.xen: implements memory sharing via Xen grant tables
+xen-gnt.xenctrl: implements memory sharing via libxc and Xen grant tables
+
+To see a concrete example, have a look at [mirage/ocaml-vchan]
