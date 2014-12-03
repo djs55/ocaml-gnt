@@ -30,11 +30,19 @@ Library xen_gnt_xen
   BuildDepends:       lwt, bigarray, io-page, lwt.syntax, sexplib.syntax
 
 Library xen_gnt_unix
+  CompiledObject:     best
+  Path:               unix
+  Findlibparent:      xen_gnt
+  Findlibname:        unix
+  Modules:            Unix_gnt
+  BuildDepends:       lwt, lwt.unix, io-page, io-page.unix, lwt.syntax, sexplib.syntax
+
+Library xen_gnt_unix2
   Build$:             flag(xenctrl)
   CompiledObject:     best
   Path:               lib
   Findlibparent:      xen_gnt
-  Findlibname:        unix
+  Findlibname:        unix2
   Modules:            Gnt_dummy # to ensure library is created
   CSources:           gntshr_stubs.c, gnttab_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
@@ -49,7 +57,7 @@ Executable test_gntshr
   Install:            false
   ByteOpt:            -bin-annot
   NativeOpt:          -bin-annot
-  BuildDepends:       xen-gnt, xen-gnt.unix, cstruct
+  BuildDepends:       xen-gnt, xen-gnt.unix2, cstruct
 
 Executable linking
   Build$:             flag(tests)&&flag(xenctrl)
@@ -59,7 +67,7 @@ Executable linking
   Custom:             true
   Install:            false
   NativeOpt:          -dontlink unix
-  BuildDepends:       xen-gnt, xen-gnt.unix
+  BuildDepends:       xen-gnt, xen-gnt.unix2
 
 Test portable
   Command:            ./main.native
