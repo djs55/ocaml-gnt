@@ -1,3 +1,9 @@
+trunk (unreleased):
+* Rename the "unix" subpackage to "xenctrl"
+* Add support for Unix IPC using mmap(2)
+* Add a subpackage for "xen" which will include the mirage-platform C
+  bindings eventually
+
 2.0.0 (12-Oct-2014):
 * Add support for Gnttab and Gntshr variants that may either
   allocate pages or not.  This library now supports both variants.
