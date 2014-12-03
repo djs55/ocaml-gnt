@@ -26,7 +26,7 @@ Library xen_gnt_xen
   Path:               xen
   Findlibparent:      xen_gnt
   Findlibname:        xen
-  Modules:            Xen_gnt # stubs currently in mirage-platform
+  Modules:            Xen_memory # stubs currently in mirage-platform
   BuildDepends:       lwt, bigarray, io-page, lwt.syntax, sexplib.syntax
 
 Library xen_gnt_unix
@@ -34,7 +34,7 @@ Library xen_gnt_unix
   Path:               unix
   Findlibparent:      xen_gnt
   Findlibname:        unix
-  Modules:            Unix_gnt
+  Modules:            Unix_memory
   BuildDepends:       lwt, lwt.unix, io-page, io-page.unix, lwt.syntax, sexplib.syntax
 
 Library xen_gnt_xenctrl
@@ -43,7 +43,7 @@ Library xen_gnt_xenctrl
   Path:               xenctrl
   Findlibparent:      xen_gnt
   Findlibname:        xenctrl
-  Modules:            Xenctrl_gnt
+  Modules:            Xenctrl_memory
   CSources:           gntshr_stubs.c, gnttab_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
   CCOpt:              -Wno-unused-function -g -ggdb
