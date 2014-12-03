@@ -21,6 +21,15 @@ Library memory
   NativeOpt:          -bin-annot
   BuildDepends:       unix, bigarray, io-page, lwt, sexplib.syntax
 
+Library memory_inheap
+  CompiledObject:     best
+  Path:               inheap
+  Findlibname:        inheap
+  Findlibparent:      memory
+  Modules:            Inheap_memory
+  BuildDepends:       xen-gnt, lwt
+
+
 Library memory_xen
   CompiledObject:     best
   Path:               xen
