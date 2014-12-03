@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 3aee93a6108c240328fa5610cc9d4e3c) *)
+(* DO NOT EDIT (digest: 9c857f5c9cd2d9714c9e723d3396348e) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -608,8 +608,13 @@ open Ocamlbuild_plugin;;
 let package_default =
   {
      MyOCamlbuildBase.lib_ocaml =
-       [("xen_gnt", ["lib"], []); ("xen_gnt_unix", ["lib"], [])];
-     lib_c = [("xen_gnt_unix", "lib", [])];
+       [
+          ("xen_gnt", ["lib"], []);
+          ("xen_gnt_xen", ["xen"], []);
+          ("xen_gnt_unix", ["unix"], []);
+          ("xen_gnt_xenctrl", ["xenctrl"], [])
+       ];
+     lib_c = [("xen_gnt_xenctrl", "xenctrl", [])];
      flags =
        [
           (["oasis_library_xen_gnt_byte"; "ocaml"; "link"; "byte"],
@@ -624,7 +629,7 @@ let package_default =
             [(OASISExpr.EBool true, S [A "-bin-annot"])]);
           (["oasis_library_xen_gnt_native"; "ocaml"; "compile"; "native"],
             [(OASISExpr.EBool true, S [A "-bin-annot"])]);
-          (["oasis_library_xen_gnt_unix_ccopt"; "compile"],
+          (["oasis_library_xen_gnt_xenctrl_ccopt"; "compile"],
             [
                (OASISExpr.EBool true,
                  S
@@ -637,7 +642,7 @@ let package_default =
                       A "-ggdb"
                    ])
             ]);
-          (["oasis_library_xen_gnt_unix_cclib"; "link"],
+          (["oasis_library_xen_gnt_xenctrl_cclib"; "link"],
             [
                (OASISExpr.EBool true,
                  S
@@ -648,7 +653,7 @@ let package_default =
                       A "-lxenctrl"
                    ])
             ]);
-          (["oasis_library_xen_gnt_unix_cclib"; "ocamlmklib"; "c"],
+          (["oasis_library_xen_gnt_xenctrl_cclib"; "ocamlmklib"; "c"],
             [
                (OASISExpr.EBool true,
                  S [A "-L/usr/lib/xen-4.2/lib"; A "-lxenctrl"])
@@ -682,7 +687,8 @@ let package_default =
           (["oasis_executable_linking_native"; "ocaml"; "compile"; "native"],
             [(OASISExpr.EBool true, S [A "-dontlink"; A "unix"])])
        ];
-     includes = [("test", ["lib"]); ("lib_test", ["lib"])]
+     includes =
+       [("test", ["lib"; "xenctrl"]); ("lib_test", ["lib"; "xenctrl"])]
   }
   ;;
 
@@ -690,6 +696,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 694 "myocamlbuild.ml"
+# 700 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

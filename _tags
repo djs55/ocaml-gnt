@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: f3b33248c42fd2c66986e5304c348cba)
+# DO NOT EDIT (digest: c6db5d78157725102d9c83a6d0be0477)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -16,37 +16,61 @@ true: annot, bin_annot
 "_darcs": not_hygienic
 # Library xen_gnt
 "lib/xen_gnt.cmxs": use_xen_gnt
+"lib/s.cmx": for-pack(Xen_gnt)
+"lib/gnt.cmx": for-pack(Xen_gnt)
 <lib/xen_gnt.{cma,cmxa}>: oasis_library_xen_gnt_byte
 <lib/*.ml{,i,y}>: oasis_library_xen_gnt_byte
 <lib/xen_gnt.{cma,cmxa}>: oasis_library_xen_gnt_native
 <lib/*.ml{,i,y}>: oasis_library_xen_gnt_native
-<lib/*.ml{,i,y}>: pkg_io-page
-# Library xen_gnt_unix
-"lib/xen_gnt_unix.cmxs": use_xen_gnt_unix
-<lib/*.ml{,i,y}>: oasis_library_xen_gnt_unix_ccopt
-"lib/gntshr_stubs.c": oasis_library_xen_gnt_unix_ccopt
-"lib/gnttab_stubs.c": oasis_library_xen_gnt_unix_ccopt
-<lib/xen_gnt_unix.{cma,cmxa}>: oasis_library_xen_gnt_unix_cclib
-"lib/libxen_gnt_unix_stubs.lib": oasis_library_xen_gnt_unix_cclib
-"lib/dllxen_gnt_unix_stubs.dll": oasis_library_xen_gnt_unix_cclib
-"lib/libxen_gnt_unix_stubs.a": oasis_library_xen_gnt_unix_cclib
-"lib/dllxen_gnt_unix_stubs.so": oasis_library_xen_gnt_unix_cclib
-<lib/xen_gnt_unix.{cma,cmxa}>: use_libxen_gnt_unix_stubs
 <lib/*.ml{,i,y}>: pkg_bigarray
-<lib/*.ml{,i,y}>: pkg_io-page.unix
+<lib/*.ml{,i,y}>: pkg_io-page
 <lib/*.ml{,i,y}>: pkg_lwt
-<lib/*.ml{,i,y}>: pkg_lwt.unix
+<lib/*.ml{,i,y}>: pkg_sexplib.syntax
 <lib/*.ml{,i,y}>: pkg_unix
-"lib/gntshr_stubs.c": pkg_bigarray
-"lib/gntshr_stubs.c": pkg_io-page.unix
-"lib/gntshr_stubs.c": pkg_lwt
-"lib/gntshr_stubs.c": pkg_lwt.unix
-"lib/gntshr_stubs.c": pkg_unix
-"lib/gnttab_stubs.c": pkg_bigarray
-"lib/gnttab_stubs.c": pkg_io-page.unix
-"lib/gnttab_stubs.c": pkg_lwt
-"lib/gnttab_stubs.c": pkg_lwt.unix
-"lib/gnttab_stubs.c": pkg_unix
+# Library xen_gnt_xen
+"xen/xen_gnt_xen.cmxs": use_xen_gnt_xen
+<xen/*.ml{,i,y}>: pkg_bigarray
+<xen/*.ml{,i,y}>: pkg_io-page
+<xen/*.ml{,i,y}>: pkg_lwt
+<xen/*.ml{,i,y}>: pkg_lwt.syntax
+<xen/*.ml{,i,y}>: pkg_sexplib.syntax
+# Library xen_gnt_unix
+"unix/xen_gnt_unix.cmxs": use_xen_gnt_unix
+<unix/*.ml{,i,y}>: pkg_io-page
+<unix/*.ml{,i,y}>: pkg_io-page.unix
+<unix/*.ml{,i,y}>: pkg_lwt
+<unix/*.ml{,i,y}>: pkg_lwt.syntax
+<unix/*.ml{,i,y}>: pkg_lwt.unix
+<unix/*.ml{,i,y}>: pkg_sexplib.syntax
+# Library xen_gnt_xenctrl
+"xenctrl/xen_gnt_xenctrl.cmxs": use_xen_gnt_xenctrl
+<xenctrl/*.ml{,i,y}>: oasis_library_xen_gnt_xenctrl_ccopt
+"xenctrl/gntshr_stubs.c": oasis_library_xen_gnt_xenctrl_ccopt
+"xenctrl/gnttab_stubs.c": oasis_library_xen_gnt_xenctrl_ccopt
+<xenctrl/xen_gnt_xenctrl.{cma,cmxa}>: oasis_library_xen_gnt_xenctrl_cclib
+"xenctrl/libxen_gnt_xenctrl_stubs.lib": oasis_library_xen_gnt_xenctrl_cclib
+"xenctrl/dllxen_gnt_xenctrl_stubs.dll": oasis_library_xen_gnt_xenctrl_cclib
+"xenctrl/libxen_gnt_xenctrl_stubs.a": oasis_library_xen_gnt_xenctrl_cclib
+"xenctrl/dllxen_gnt_xenctrl_stubs.so": oasis_library_xen_gnt_xenctrl_cclib
+<xenctrl/xen_gnt_xenctrl.{cma,cmxa}>: use_libxen_gnt_xenctrl_stubs
+<xenctrl/*.ml{,i,y}>: pkg_bigarray
+<xenctrl/*.ml{,i,y}>: pkg_io-page.unix
+<xenctrl/*.ml{,i,y}>: pkg_lwt
+<xenctrl/*.ml{,i,y}>: pkg_lwt.unix
+<xenctrl/*.ml{,i,y}>: pkg_sexplib.syntax
+<xenctrl/*.ml{,i,y}>: pkg_unix
+"xenctrl/gntshr_stubs.c": pkg_bigarray
+"xenctrl/gntshr_stubs.c": pkg_io-page.unix
+"xenctrl/gntshr_stubs.c": pkg_lwt
+"xenctrl/gntshr_stubs.c": pkg_lwt.unix
+"xenctrl/gntshr_stubs.c": pkg_sexplib.syntax
+"xenctrl/gntshr_stubs.c": pkg_unix
+"xenctrl/gnttab_stubs.c": pkg_bigarray
+"xenctrl/gnttab_stubs.c": pkg_io-page.unix
+"xenctrl/gnttab_stubs.c": pkg_lwt
+"xenctrl/gnttab_stubs.c": pkg_lwt.unix
+"xenctrl/gnttab_stubs.c": pkg_sexplib.syntax
+"xenctrl/gnttab_stubs.c": pkg_unix
 # Executable test_gntshr
 <test/test_gntshr.{native,byte}>: oasis_executable_test_gntshr_byte
 <test/*.ml{,i,y}>: oasis_executable_test_gntshr_byte
@@ -58,18 +82,20 @@ true: annot, bin_annot
 <test/test_gntshr.{native,byte}>: pkg_io-page.unix
 <test/test_gntshr.{native,byte}>: pkg_lwt
 <test/test_gntshr.{native,byte}>: pkg_lwt.unix
+<test/test_gntshr.{native,byte}>: pkg_sexplib.syntax
 <test/test_gntshr.{native,byte}>: pkg_unix
 <test/test_gntshr.{native,byte}>: use_xen_gnt
-<test/test_gntshr.{native,byte}>: use_xen_gnt_unix
+<test/test_gntshr.{native,byte}>: use_xen_gnt_xenctrl
 <test/*.ml{,i,y}>: pkg_bigarray
 <test/*.ml{,i,y}>: pkg_cstruct
 <test/*.ml{,i,y}>: pkg_io-page
 <test/*.ml{,i,y}>: pkg_io-page.unix
 <test/*.ml{,i,y}>: pkg_lwt
 <test/*.ml{,i,y}>: pkg_lwt.unix
+<test/*.ml{,i,y}>: pkg_sexplib.syntax
 <test/*.ml{,i,y}>: pkg_unix
 <test/*.ml{,i,y}>: use_xen_gnt
-<test/*.ml{,i,y}>: use_xen_gnt_unix
+<test/*.ml{,i,y}>: use_xen_gnt_xenctrl
 # Executable linking
 <lib_test/main.{native,byte}>: oasis_executable_linking_native
 <lib_test/*.ml{,i,y}>: oasis_executable_linking_native
@@ -78,17 +104,19 @@ true: annot, bin_annot
 <lib_test/main.{native,byte}>: pkg_io-page.unix
 <lib_test/main.{native,byte}>: pkg_lwt
 <lib_test/main.{native,byte}>: pkg_lwt.unix
+<lib_test/main.{native,byte}>: pkg_sexplib.syntax
 <lib_test/main.{native,byte}>: pkg_unix
 <lib_test/main.{native,byte}>: use_xen_gnt
-<lib_test/main.{native,byte}>: use_xen_gnt_unix
+<lib_test/main.{native,byte}>: use_xen_gnt_xenctrl
 <lib_test/*.ml{,i,y}>: pkg_bigarray
 <lib_test/*.ml{,i,y}>: pkg_io-page
 <lib_test/*.ml{,i,y}>: pkg_io-page.unix
 <lib_test/*.ml{,i,y}>: pkg_lwt
 <lib_test/*.ml{,i,y}>: pkg_lwt.unix
+<lib_test/*.ml{,i,y}>: pkg_sexplib.syntax
 <lib_test/*.ml{,i,y}>: pkg_unix
 <lib_test/*.ml{,i,y}>: use_xen_gnt
-<lib_test/*.ml{,i,y}>: use_xen_gnt_unix
+<lib_test/*.ml{,i,y}>: use_xen_gnt_xenctrl
 <lib_test/main.{native,byte}>: custom
 # OASIS_STOP
 <lib>: include
