@@ -48,9 +48,11 @@ let rec get_n n =
 let individual_pages = Hashtbl.create 16
 let big_mapping = Hashtbl.create 16
 
-let share ~domid ~npages ~rw =
-  let mapping = Io_page.get npages in
+let share ~domid ~npages ~rw ?(contents=`Zero) () =
   let grants = get_n npages in
+  let mapping = match contents with
+  | `Zero -> Io_page.get npages
+  | `Buffer b -> b in
   let share = { grants; mapping } in
   let pages = Io_page.to_pages mapping in
   List.iter (fun (grant, page) -> Hashtbl.replace individual_pages grant page) (List.combine grants pages);

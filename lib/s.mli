@@ -27,7 +27,22 @@ module type MEMORY = sig
   val grants_of_share: share -> grant list
   val buf_of_share: share -> Io_page.t
 
-  val share: domid:int -> npages:int -> rw:bool -> share io
+  val share: domid:int
+     -> npages:int
+     -> rw:bool
+     -> ?contents: [ `Zero | `Buffer of Io_page.t]
+     -> unit
+     -> share io
+  (** [share ~domid ~npages ~rw ?contents ()] returns a [share]
+      representing some pages which we have shared with [domid], either
+      read-only [if not rw] or read-write [if rw]. The contents can
+      either be:
+      - `Zero: this means allocate fresh zeroed pages and use them.
+      - `Buffer b : either share this buffer [b] directly (if the API
+        exists on your current platform) or share a fresh buffer and
+        copy the contents of [b] into it. To cope with both of these
+        possibilities the application must use [buf_of_share] to access
+        the true shared buffer. *)
 
   val unshare: share -> unit io
 

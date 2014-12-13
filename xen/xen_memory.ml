@@ -25,9 +25,6 @@ type grant = int32 with sexp
 let grant_of_int32 x = x
 let int32_of_grant x = x
 
-let grants_of_share x = List.map Int32.of_int x.Gntshr.refs
-let buf_of_share x = x.Gntshr.mapping
-
 let open_gntshr =
   let cache = ref None in
   fun () -> match !cache with
@@ -37,17 +34,58 @@ let open_gntshr =
       cache := Some i;
       i
 
-type share = Gntshr.share with sexp_of
+module Io_page = struct
+  include Io_page
 
-let share ~domid ~npages ~rw =
-  match Gntshr.share_pages (open_gntshr ()) domid npages rw with
-  | None ->
-    fail (Failure (Printf.sprintf "share_pages domid=%d npages=%d rw=%b" domid npages rw))
-  | Some s ->
-    return s
+  type _t = unit with sexp
+  let sexp_of_t _ = sexp_of__t ()
+end
 
-let unshare share =
+type share =
+| Share of Gntshr.share
+| Refs of Io_page.t * (Gnt.gntref list)
+with sexp_of
+
+let grants_of_share = function
+| Share share -> List.map Int32.of_int share.Gntshr.refs
+| Refs (_, refs) -> List.map Int32.of_int refs
+
+let buf_of_share = function
+| Share share -> share.Gntshr.mapping
+| Refs (buffer, _) -> buffer
+
+let share ~domid ~npages ~rw ?(contents=`Zero) () =
+  match contents with
+  | `Zero ->
+    begin match Gntshr.share_pages (open_gntshr ()) domid npages rw with
+    | None ->
+      fail (Failure (Printf.sprintf "share_pages domid=%d npages=%d rw=%b" domid npages rw))
+    | Some s ->
+      return (Share s)
+    end
+  | `Buffer b ->
+    Gntshr.get_n npages
+    >>= fun grefs ->
+    let pages = Io_page.to_pages b in
+    List.iter
+      (fun (gref, page) ->
+        (* This grants access to the *base* data pointer of the page *)
+        (* XXX: another place where we peek inside the cstruct *)
+        Gnt.Gntshr.grant_access ~domid ~writable:rw gref page
+      ) (List.combine grefs pages);
+    return (Refs (b, grefs))
+
+
+let unshare = function
+| Share share ->
   Gntshr.munmap_exn (open_gntshr ()) share;
+  return ()
+| Refs (_, grefs) ->
+  List.iter
+    (fun gref ->
+      Gnt.Gntshr.end_access gref;
+      Gnt.Gntshr.put gref;
+    ) grefs;
   return ()
 
 let open_gnttab =

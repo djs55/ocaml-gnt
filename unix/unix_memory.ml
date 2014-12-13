@@ -117,30 +117,21 @@ let get =
 let rec get_n n =
   if n = 0 then [] else get () :: (get_n (n-1))
 
-let share ~domid ~npages ~rw =
+let share ~domid ~npages ~rw ?(contents=`Zero) () =
   let grants = get_n npages in
   let size = npages * 4096 in
   filename_of_grants grants
   >>= fun name ->
   Lwt_unix.openfile name [ Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC; Lwt_unix.O_RDWR ] 0o0600
   >>= fun fd ->
-  (*
-  Lwt_unix.lseek fd (npages * 4096 - 1) Unix.SEEK_SET
-  >>= fun _ ->
-  Lwt_unix.write fd "\000" 0 1
-  >>= fun n ->
-  *)
   let unix_fd = Lwt_unix.unix_file_descr fd in
   let mapping = Lwt_bytes.map_file ~fd:unix_fd ~shared:true ~size () in
   Lwt_unix.close fd
   >>= fun () ->
-  (*
-  if n <> 1 then begin
-    let msg = Printf.sprintf "Failed to create %s with %d pages" name npages in
-    Printf.forintf stderr "%s\n%!" msg;
-    fail (Failure msg)
-  end else
-  *)
+  (* Fill the pages with the data *)
+  (match contents with
+    | `Zero -> ()
+    | `Buffer b -> Cstruct.blit (Io_page.to_cstruct b) 0 (Io_page.to_cstruct mapping) 0 size);
   return { grants; mapping }
 
 let unshare share =
@@ -175,4 +166,3 @@ let unmap { mapping; grants } = ()
 let assert_cleaned_up () = ()
 
 let description = "Memory pages will be shared using mmap(2)."
-
