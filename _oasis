@@ -16,10 +16,10 @@ Library memory
   CompiledObject:     best
   Path:               lib
   Findlibname:        xen-gnt
-  Modules:            S, Gnt
+  Modules:            S
   ByteOpt:            -bin-annot
   NativeOpt:          -bin-annot
-  BuildDepends:       unix, bigarray, io-page, lwt, sexplib.syntax
+  BuildDepends:       lwt, sexplib.syntax, cstruct
 
 Library memory_inheap
   CompiledObject:     best
@@ -29,13 +29,12 @@ Library memory_inheap
   Modules:            Inheap_memory
   BuildDepends:       xen-gnt, lwt
 
-
 Library memory_xen
   CompiledObject:     best
   Path:               xen
   Findlibparent:      memory
   Findlibname:        xen
-  Modules:            Xen_memory # stubs currently in mirage-platform
+  Modules:            Gnt, Xen_memory # stubs currently in mirage-platform
   BuildDepends:       lwt, bigarray, io-page, lwt.syntax, sexplib.syntax
 
 Library memory_unix
@@ -44,7 +43,7 @@ Library memory_unix
   Findlibparent:      memory
   Findlibname:        unix
   Modules:            Unix_memory
-  BuildDepends:       lwt, lwt.unix, io-page, io-page.unix, lwt.syntax, sexplib.syntax
+  BuildDepends:       lwt, lwt.unix, io-page.unix, io-page, lwt.syntax, sexplib.syntax
 
 Library memory_xenctrl
   Build$:             flag(xenctrl)
@@ -52,7 +51,7 @@ Library memory_xenctrl
   Path:               xenctrl
   Findlibparent:      memory
   Findlibname:        xenctrl
-  Modules:            Xenctrl_memory
+  Modules:            Gnt, Xenctrl_memory
   CSources:           gntshr_stubs.c, gnttab_stubs.c
   CCLib:              -L/usr/lib/xen-4.2/lib -lxenctrl
   CCOpt:              -Wno-unused-function -g -ggdb

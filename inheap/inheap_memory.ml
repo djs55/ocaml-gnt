@@ -56,7 +56,7 @@ let rec to_pages remaining =
 let share ~domid ~npages ~rw ?(contents=`Zero) () =
   let grants = get_n npages in
   let mapping = match contents with
-  | `Zero -> Io_page.(to_cstruct (get npages))
+  | `Zero -> Cstruct.create (npages * 4096)
   | `Buffer b -> b in
   let share = { grants; mapping } in
   let pages = to_pages mapping in
