@@ -34,16 +34,12 @@ let open_gntshr =
       cache := Some i;
       i
 
-module Io_page = struct
-  include Io_page
-
-  type _t = unit with sexp
-  let sexp_of_t _ = sexp_of__t ()
-end
+type page = Cstruct.t
+let sexp_of_page _ = Sexplib.Sexp.Atom "<buffer>"
 
 type share =
 | Share of Gntshr.share
-| Refs of Io_page.t * (Gnt.gntref list)
+| Refs of page * (Gnt.gntref list)
 with sexp_of
 
 let grants_of_share = function
@@ -51,8 +47,13 @@ let grants_of_share = function
 | Refs (_, refs) -> List.map Int32.of_int refs
 
 let buf_of_share = function
-| Share share -> share.Gntshr.mapping
+| Share share -> Io_page.to_cstruct share.Gntshr.mapping
 | Refs (buffer, _) -> buffer
+
+let rec to_pages remaining =
+  if Cstruct.len remaining <= 4096
+  then [ remaining ]
+  else Cstruct.sub remaining 0 4096 :: (to_pages (Cstruct.shift remaining 4096))
 
 let share ~domid ~npages ~rw ?(contents=`Zero) () =
   match contents with
@@ -66,12 +67,23 @@ let share ~domid ~npages ~rw ?(contents=`Zero) () =
   | `Buffer b ->
     Gntshr.get_n npages
     >>= fun grefs ->
-    let pages = Io_page.to_pages b in
+    let pages = match npages with
+    | 1 -> [ b ]
+    | _ ->
+      (* XXX: this is inefficient because mirage-platform stub_gntshr_grant_access
+      calls [base_page_of] which queries the [data] pointer of the bigarray *)
+      List.map Io_page.to_cstruct Io_page.(to_pages (Cstruct.to_bigarray b)) in
+    (* pages are now Cstruct wrappers around Io_pages which are safe to share *)
     List.iter
       (fun (gref, page) ->
         (* This grants access to the *base* data pointer of the page *)
         (* XXX: another place where we peek inside the cstruct *)
-        Gnt.Gntshr.grant_access ~domid ~writable:rw gref page
+        if page.Cstruct.off <> 0 then begin
+          Printf.printf "Memory.share: supplied buffer not page-aligned\n%!";
+          (* This is a fatal error in the application *)
+          failwith "Memory.share: supplied buffer not page-aligned";
+        end;
+        Gnt.Gntshr.grant_access ~domid ~writable:rw gref page.Cstruct.buffer
       ) (List.combine grefs pages);
     return (Refs (b, grefs))
 
@@ -99,7 +111,7 @@ let open_gnttab =
 
 type mapping = Gnttab.Local_mapping.t with sexp_of
 
-let buf_of_mapping x = Gnttab.Local_mapping.to_buf x
+let buf_of_mapping x = Io_page.to_cstruct (Gnttab.Local_mapping.to_buf x)
 
 type grants = (int * grant) list with sexp_of
 

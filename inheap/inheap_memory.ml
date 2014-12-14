@@ -25,7 +25,7 @@ type grant = int32 with sexp
 let grant_of_int32 x = x
 let int32_of_grant x = x
 
-type page = Io_page.t
+type page = Cstruct.t
 let sexp_of_page _ = Sexplib.Sexp.Atom "<buffer>"
 
 type share = {
@@ -48,13 +48,18 @@ let rec get_n n =
 let individual_pages = Hashtbl.create 16
 let big_mapping = Hashtbl.create 16
 
+let rec to_pages remaining =
+  if Cstruct.len remaining <= 4096
+  then [ remaining ]
+  else Cstruct.sub remaining 0 4096 :: (to_pages (Cstruct.shift remaining 4096))
+
 let share ~domid ~npages ~rw ?(contents=`Zero) () =
   let grants = get_n npages in
   let mapping = match contents with
-  | `Zero -> Io_page.get npages
+  | `Zero -> Io_page.(to_cstruct (get npages))
   | `Buffer b -> b in
   let share = { grants; mapping } in
-  let pages = Io_page.to_pages mapping in
+  let pages = to_pages mapping in
   List.iter (fun (grant, page) -> Hashtbl.replace individual_pages grant page) (List.combine grants pages);
   Hashtbl.replace big_mapping (List.hd grants) mapping;
   return share

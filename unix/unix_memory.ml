@@ -92,7 +92,7 @@ type grant = int32 with sexp
 let grant_of_int32 x = x
 let int32_of_grant x = x
 
-type page = Io_page.t
+type page = Cstruct.t
 let sexp_of_page _ = Sexplib.Sexp.Atom "<buffer>"
 
 type share = {
@@ -125,13 +125,13 @@ let share ~domid ~npages ~rw ?(contents=`Zero) () =
   Lwt_unix.openfile name [ Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC; Lwt_unix.O_RDWR ] 0o0600
   >>= fun fd ->
   let unix_fd = Lwt_unix.unix_file_descr fd in
-  let mapping = Lwt_bytes.map_file ~fd:unix_fd ~shared:true ~size () in
+  let mapping = Io_page.to_cstruct (Lwt_bytes.map_file ~fd:unix_fd ~shared:true ~size ()) in
   Lwt_unix.close fd
   >>= fun () ->
   (* Fill the pages with the data *)
   (match contents with
     | `Zero -> ()
-    | `Buffer b -> Cstruct.blit (Io_page.to_cstruct b) 0 (Io_page.to_cstruct mapping) 0 size);
+    | `Buffer b -> Cstruct.blit b 0 mapping 0 size);
   return { grants; mapping }
 
 let unshare share =
@@ -152,7 +152,7 @@ let mapv ~grants ~rw =
   Lwt_unix.openfile name [ Lwt_unix.O_RDWR ] 0o0600
   >>= fun fd ->
   let unix_fd = Lwt_unix.unix_file_descr fd in
-  let mapping = Lwt_bytes.map_file ~fd:unix_fd ~shared:true () in
+  let mapping = Io_page.to_cstruct (Lwt_bytes.map_file ~fd:unix_fd ~shared:true ()) in
   Lwt_unix.close fd
   >>= fun () ->
   return { mapping; grants }

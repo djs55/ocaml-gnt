@@ -25,12 +25,12 @@ module type MEMORY = sig
   type share with sexp_of
 
   val grants_of_share: share -> grant list
-  val buf_of_share: share -> Io_page.t
+  val buf_of_share: share -> Cstruct.t
 
   val share: domid:int
      -> npages:int
      -> rw:bool
-     -> ?contents: [ `Zero | `Buffer of Io_page.t]
+     -> ?contents: [ `Zero | `Buffer of Cstruct.t ]
      -> unit
      -> share io
   (** [share ~domid ~npages ~rw ?contents ()] returns a [share]
@@ -48,7 +48,7 @@ module type MEMORY = sig
 
   type mapping with sexp_of
 
-  val buf_of_mapping: mapping -> Io_page.t
+  val buf_of_mapping: mapping -> Cstruct.t
 
   val map: domid:int -> grant:grant -> rw:bool -> mapping io
 
